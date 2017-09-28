@@ -8,15 +8,12 @@ before_install:
 - docker run -v /tmp/build:/build -e "CLONEPATH=https://github.com/redbox-mint/redbox-build-distro-legacy.git"
   qcifengineering/redbox-builder
 install: true
+script: docker run -v /tmp/build:/build -e "SONATYPE_USERNAME=$SONATYPE_USERNAME" -e "SONATYPE_PASSWORD=$SONATYPE_PASSWORD" qcifengineering/redbox-builder /bin/bash -c "cd build/src;mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn --settings /m2_repo/travis-settings.xml -Dmaven.repo.local=/m2_repo -DskipTests=true -Pbuild-package deploy | grep -v 'CHECKSUM.*'| grep -v 'downloaded.*' | grep -v 'Copying.*'| grep -v '\[INFO\].*';mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn --settings /m2_repo/travis-settings.xml -Dmaven.repo.local=/m2_repo -DskipTests=true -Pbuild-package deploy | grep -v 'CHECKSUM.*'| grep -v 'downloaded.*' | grep -v 'Copying.*'| grep -v '\[INFO\].*'"
 script: docker run -v /tmp/build:/build -e "SONATYPE_USERNAME=$SONATYPE_USERNAME"
   -e "SONATYPE_PASSWORD=$SONATYPE_PASSWORD" qcifengineering/redbox-builder /bin/bash
   -c "cd build/src;mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
   --settings /m2_repo/travis-settings.xml -Dmaven.repo.local=/m2_repo -DskipTests=true
-  -Pbuild-package deploy | grep -v 'CHECKSUM.*'| grep -v 'downloaded.*' | grep
-  -v 'Copying.*'| grep -v '\[INFO\].*';mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-  --settings /m2_repo/travis-settings.xml -Dmaven.repo.local=/m2_repo -DskipTests=true
-  -Pbuild-package deploy | grep -v 'CHECKSUM.*'| grep -v 'downloaded.*' | grep -v
-  'Copying.*'| grep -v '\[INFO\].*'"
+  -Pbuild-package deploy"
 notifications:
   webhooks:
     urls:
